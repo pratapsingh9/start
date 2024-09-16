@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { SearchIcon, Users, ArrowRight, Menu, X, ListCollapse } from "lucide-react";
 import { GroupMaps, GroupsProps } from "@/types/grouptypes";
-import { FcAbout } from "react-icons/fc";
-import { SiAboutdotme } from "react-icons/si";
 import { HiDotsVertical } from "react-icons/hi";
 
 const IsDarkMode: boolean = false;
