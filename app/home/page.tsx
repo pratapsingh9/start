@@ -1,215 +1,114 @@
 'use client'
-import { useState } from "react";
+import RightBar from "@/components/rightbar";
+import { SideBar } from "@/components/sidebar";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { ArrowLeft, Calendar, FileText, Hash, Inbox, Link2, LinkIcon, PlusCircle, SendIcon, Share2Icon, ShareIcon } from "lucide-react";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, Hash, Inbox, Info, InfoIcon, Link2, LinkIcon, Paperclip, PlusCircle, Send, SendHorizonalIcon, SendIcon, SendToBackIcon, Share2Icon, ShareIcon, Smile } from "lucide-react";
+import Image from "next/image";
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { initialMessages, Message } from "@/types/msgtypes";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
-import { Settings } from "lucide-react";
-const SideBar = () => {
-  return (
-    <aside className="w-2/12 h-screen bg-black border-r border-gray-700 flex flex-col p-4">
-      {/* Nexus and Logo */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <div className="bg-blue-600 h-8 w-8 rounded-full flex items-center justify-center">
-            {/* Logo Placeholder */}
-            <span className="text-white font-bold">N</span>
-          </div>
-          <div className="w-4 h-1">
+const MainGroupScreen = () => {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
 
-          </div>
-          <h1 className="text-xl font-bold  text-white">Nexus</h1>
-        </div>
-        <div>
-          {/* Placeholder for settings icon */}
-          <span className="text-white">
-            <Settings />
-          </span>
-        </div>
-      </div>
-
-      {/* General Section */}
-      <div className="mb-6 mt-6">
-        <h2 className="text-gray-400 text-xs uppercase mb-2">General</h2>
-        <ul>
-          <li className="flex items-center space-x-2 mb-2 hover:bg-gray-700 p-2 rounded">
-            <Inbox className="w-5 h-5 text-gray-400" />
-            <span className="text-white">Inbox</span>
-            <span className="ml-auto text-sm bg-gray-600 px-2 py-1 rounded-full text-gray-200">3</span>
-          </li>
-          <li className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-            <FileText className="w-5 h-5 text-gray-400" />
-            <span className="text-white">Draft</span>
-          </li>
-        </ul>
-      </div>
-
-      {/* Teams Section */}
-      <div className="mb-6">
-        <h2 className="text-gray-400 text-xs uppercase mb-2">Teams</h2>
-        <ul>
-          {["UI/UX Teams", "Research Gang", "Talks Project"].map((team, index) => (
-            <li key={index} className="flex items-center space-x-2 mb-2 hover:bg-gray-700 p-2 rounded">
-              <div className="flex items-center space-x-1">
-                {/* Team avatars */}
-                <div className="flex -space-x-1">
-                  <img
-                    src="https://via.placeholder.com/24"
-                    alt="team-avatar"
-                    className="w-6 h-6 rounded-full border-2 border-gray-800"
-                  />
-                  <img
-                    src="https://via.placeholder.com/24"
-                    alt="team-avatar"
-                    className="w-6 h-6 rounded-full border-2 border-gray-800"
-                  />
-                </div>
-              </div>
-              <span className="text-white">{team}</span>
-              {index === 2 && (
-                <span className="ml-auto text-sm bg-gray-600 px-2 py-1 rounded-full text-gray-200">24</span>
-              )}
-            </li>
-          ))}
-          <li className="flex items-center space-x-2 text-blue-400 hover:bg-gray-700 p-2 rounded cursor-pointer">
-            <PlusCircle className="w-5 h-5" />
-            <span>Create New Team</span>
-          </li>
-        </ul>
-      </div>
-
-      {/* Channel Section */}
-      <div className="mb-6">
-        <h2 className="text-gray-400 text-xs uppercase mb-2">Channel</h2>
-        <ul>
-          {["Mobile Designer", "Front-End Community", "UI/UX Community", "Web Designer"].map((channel, index) => (
-            <li key={index} className="flex items-center space-x-2 mb-2 hover:bg-gray-700 p-2 rounded">
-              <Hash className="w-5 h-5 text-gray-400" />
-              <span className="text-white">{channel}</span>
-            </li>
-          ))}
-          <li className="flex items-center space-x-2 text-blue-400 hover:bg-gray-700 p-2 rounded cursor-pointer">
-            <PlusCircle className="w-5 h-5" />
-            <span>Make a Channel</span>
-          </li>
-        </ul>
-      </div>
-
-      {/* Integrations Section */}
-      <div className="mb-6">
-        <h2 className="text-gray-400 text-xs uppercase mb-2">Integrations</h2>
-        <ul>
-          <li className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-            <Calendar className="w-5 h-5 text-gray-400" />
-            <span className="text-white">Google Calendar</span>
-          </li>
-        </ul>
-      </div>
-
-      {/* Footer - User Info */}
-      <div className="mt-auto">
-        <div className="flex items-center space-x-2">
-          <img
-            src="https://via.placeholder.com/32"
-            alt="user-avatar"
-            className="w-8 h-8 rounded-full"
-          />
-          <div>
-            <p className="text-sm font-medium text-white">Kevin Heart</p>
-            <p className="text-xs text-gray-400">On duty</p>
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
-};
-
-const IshaveChildre: boolean = true;
-
-const MainGroupScreen = ({ width }) => {
-  return (
-    <div
-      className="bg-black text-white h-screen flex flex-col"
-      style={{ width: `${width}px` }}
-    >
-      <header className="h-16 justify-between border-b border-gray-800 flex items-center px-6">
-        <button className="mr-4">
-          <ArrowLeft className="w-6 h-6 text-gray-400" />
-        </button>
-        <h1 className="text-xl font-semibold">Container</h1>
-        <div className="align-middle">
-          <InfoCircledIcon className="text-white" />
-        </div>
-      </header>
-
-      <main className="flex-1 p-6 flex flex-col">
-        <p className="text-gray-400">Main content area</p>
-        <div className="mt-auto">
-          <div className="bg-gray-900 rounded-xl h-14 flex items-center px-6">
-            <div className="flex items-center w-full">
-              <Link2 className="text-blue-400 w-7 h-7" />
-              <input
-                type="text"
-                placeholder="Type Your Thread..."
-                className="ml-4 bg-transparent py-10 text-xl font-semibold text-gray-400 focus:outline-none w-full"
-              />
-              <SendIcon className="text-gray-100 hover:text-white cursor-pointer" />
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-};
-
-function RightBar({ width }) {
-  return (
-    <div
-      className="h-screen bg-white"
-      style={{ width: `${width}px` }}
-    >
-      {/* RightBar content goes here */}
-    </div>
-  );
-}
-
-export default function App() {
-  const [mainWidth, setMainWidth] = useState(600);
-  const [rightBarWidth, setRightBarWidth] = useState(300);
-  const [isResizing, setIsResizing] = useState(false);
-
-  const startResize = () => {
-    setIsResizing(true);
-  };
-
-  const resize = (e) => {
-    if (isResizing) {
-      const newMainWidth = e.clientX;
-      const newRightBarWidth = window.innerWidth - newMainWidth;
-      setMainWidth(newMainWidth);
-      setRightBarWidth(newRightBarWidth);
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      const newMsg: Message = {
+        id: messages.length + 1,
+        author: 'You',
+        avatar: '/placeholder.svg?height=40&width=40',
+        content: newMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages([...messages, newMsg]);
+      setNewMessage('');
     }
   };
 
-  const stopResize = () => {
-    setIsResizing(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
   };
 
   return (
-    <div
-      className="bg-black h-screen flex"
-      onMouseMove={resize}
-      onMouseUp={stopResize}
-    >
+    <div className="bg-black flex-grow text-white overflow-hidden h-screen w-8/12 flex flex-col border-r border-gray-300">
+      <header className="h-16 flex items-center justify-between border-b border-gray-800 px-6">
+        <div className="h-16 w-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800">
+          <ArrowLeft className="w-6 h-6 text-white" />
+        </div>
+        <h1 className="text-xl font-semibold">Container</h1>
+        <div className="cursor-pointer hover:bg-gray-800">
+          <InfoIcon className="text-white" />
+        </div>
+      </header>
+      
+      <main className="flex-grow flex flex-col overflow-hidden">
+        <ScrollArea className="flex-grow p-4 px-12 overflow-y-auto" >
+          {messages.map((message) => (
+            <div key={message.id} className="flex items-start my-4 space-x-3 mb-4">
+              <Avatar>
+                <AvatarImage src={message.avatar} alt={message.author} />
+                <AvatarFallback>{message.author[0]}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">{message.author}</span>
+                  <span className="text-sm text-white text-opacity-60">{message.timestamp}</span>
+                </div>
+                <p className="mt-1 text-white text-opacity-90">{message.content}</p>
+              </div>
+            </div>
+          ))}
+        </ScrollArea>
+      </main>
+
+      <footer className="p-4 border-t border-white border-opacity-10 bg-black">
+        <div className="flex items-center space-x-2 w-full">
+          <Button variant="ghost" size="icon" className="text-white text-opacity-60">
+          <Paperclip className="w-5 h-5">
+            <input type="file" />
+          </Paperclip>
+
+          </Button>
+          <div className="flex-grow flex items-center space-x-2">
+            <Input
+              placeholder="Type a message..."
+              className="flex-grow bg-white bg-opacity-5 border-white border-opacity-10 text-white placeholder-white placeholder-opacity-60"
+              value={newMessage}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+            />
+            <Button variant="ghost" size="icon" className="text-white text-opacity-60">
+              <Smile className="w-5 h-5" />
+            </Button>
+            <Button
+              size="icon"
+              className="bg-white text-black"
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim()}
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="bg-black h-screen flex">
       <SideBar />
-      <MainGroupScreen width={mainWidth} />
-      {/* Divider */}
-      <div
-        className="bg-gray-700 h-full cursor-col-resize"
-        onMouseDown={startResize}
-        style={{ width: '5px' }}
-      />
-      <RightBar width={rightBarWidth} />
+      <MainGroupScreen />
+      <RightBar />
     </div>
   );
 }
