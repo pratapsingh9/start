@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { initialMessages, Message } from "@/types/msgtypes";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 const MainGroupScreen = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState('');
-
+  const router = useRouter();
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const newMsg: Message = {
@@ -40,7 +40,9 @@ const MainGroupScreen = () => {
   return (
     <div className="bg-black flex-grow text-white overflow-hidden h-screen w-8/12 flex flex-col border-r border-gray-300">
       <header className="h-16 flex items-center justify-between border-b border-gray-800 px-6">
-        <div className="h-16 w-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800">
+        <div className="h-14 w-14 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800"
+          onClick={() => router.replace('/')}
+        >
           <ArrowLeft className="w-6 h-6 text-white" />
         </div>
         <h1 className="text-xl font-semibold">Container</h1>
@@ -48,7 +50,7 @@ const MainGroupScreen = () => {
           <InfoIcon className="text-white" />
         </div>
       </header>
-      
+
       <main className="flex-grow flex flex-col overflow-hidden">
         <ScrollArea className="flex-grow p-4 px-12 overflow-y-auto" >
           {messages.map((message) => (
@@ -72,9 +74,9 @@ const MainGroupScreen = () => {
       <footer className="p-4 border-t border-white border-opacity-10 bg-black">
         <div className="flex items-center space-x-2 w-full">
           <Button variant="ghost" size="icon" className="text-white text-opacity-60">
-          <Paperclip className="w-5 h-5">
-            <input type="file" />
-          </Paperclip>
+            <Paperclip className="w-5 h-5">
+              <input type="file" />
+            </Paperclip>
 
           </Button>
           <div className="flex-grow flex items-center space-x-2">

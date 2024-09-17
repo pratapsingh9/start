@@ -1,5 +1,4 @@
 'use client'
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,15 +7,6 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Users, PlusCircle, MessageSquare, Share2, Menu, Github, Twitter, Facebook, Instagram } from "lucide-react"
 const redirect: boolean = false;
-
-const card = () => {
-  return(
-    <div>
-
-    </div>
-  )
-}
-
 
 
 export default function Component() {

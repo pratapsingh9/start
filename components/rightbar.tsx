@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { SearchIcon, Users, ArrowRight, Menu, X, ListCollapse } from "lucide-react";
 import { GroupMaps, GroupsProps } from "@/types/grouptypes";
@@ -41,12 +42,14 @@ export default function RightBar() {
             </button>
 
             {/* Overlay for mobile */}
-            {isOpen && (
-                <div 
-                    className="fixed inset-0 bg-black opacity-50 z-10 lg:hidden" 
-                    onClick={toggleRightBar}
-                ></div>
-            )}
+                {
+                    isOpen && (
+                        <div className="fixed inset-0 bg-black opacity-50 z-10 lg:hidden " 
+                        onClick={toggleRightBar}
+                        >
+                        </div>
+                    )
+                }
 
             {/* RightBar */}
             <div className={`
