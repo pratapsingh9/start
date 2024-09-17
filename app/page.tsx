@@ -87,7 +87,9 @@ export default function Component() {
                   <Button className="w-full sm:w-auto bg-white text-black hover:bg-gray-200 transition-colors"  onClick={()=> {
                     router.replace('/home')
                   }} >Get Started</Button>
-                  <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-black transition-colors">Learn More</Button>
+                  <Button variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-black transition-colors">
+                    <Link href={'/signin'}>Learn More</Link>
+                  </Button>
                 </div>
               </div>
             </div>
