@@ -1,4 +1,4 @@
-import Rightbared from "@/components/righbars";
+
 import RightBar from "@/components/rightbar";
 import { SideBar } from "@/components/sidebar";
 import type { Metadata } from "next";
@@ -22,7 +22,7 @@ export default function RootLayout({
                 <div className="flex overy">
                     <SideBar />
                     {children}
-                    <Rightbared/>
+                    <RightBar/>
                 </div>
             </body>
         </html>

@@ -5,16 +5,23 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SideBar } from '@/components/sidebar';
+import { useRouter } from 'next/navigation';
 
 const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
+  const router = useRouter();
   const difficultyColor = {
     Easy: 'bg-green-100 text-green-800',
     Medium: 'bg-yellow-100 text-yellow-800',
     Hard: 'bg-red-100 text-red-800'
   };
 
+   
+  function goToProbelme() {
+    router.push('/solve');
+  } 
+
   return (
-    <Card className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-lg border-l-4 border-blue-500">
+    <Card className="w-full max-h-72 overflow-hidden transition-all duration-300 hover:shadow-lg border-l-4 border-blue-500">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-bold text-gray-800">{title}</CardTitle>
       </CardHeader>
@@ -38,7 +45,7 @@ const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
         </div>
       </CardContent>
       <CardFooter className="pt-2">
-        <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+        <Button size="sm" onClick={goToProbelme} className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white">
           Solve Challenge
         </Button>
       </CardFooter>
@@ -58,7 +65,7 @@ const ExploreScreen = () => {
 
   const problems = [
     {
-      title: "Add 2 Cheemtos",
+      title: "Two Sum",
       difficulty: "Easy",
       solvedBy: "1.2M",
       tags: ["Array", "Hash Table"],
@@ -90,25 +97,25 @@ const ExploreScreen = () => {
   const filters = ['All', 'Easy', 'Medium', 'Hard'];
 
   return (
-    <div className="flex-1 h-screen bg-gray-50 p-4 md:p-8 overflow-y-auto">
+    <div className="flex-1 min-h-screen bg-gray-50 p-8 overflow-y-auto"> {/* Added overflow-y-auto */}
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 flex items-center">
             <Code size={36} className="mr-2 text-blue-600" />
             CheemtCode
           </h1>
-          <div className="relative w-full md:w-auto">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               ref={focusRef}
               type="text"
               placeholder="Search problems"
-              className="pl-10 pr-4 py-2 w-full md:w-80 border-2 border-gray-200 focus:border-blue-500 rounded-full"
+              className="pl-10 pr-4 py-2 w-80 border-2 border-gray-200 focus:border-blue-500 rounded-full"
             />
           </div>
         </div>
 
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-6 flex space-x-2">
           {filters.map((filter) => (
             <Button
               key={filter}
@@ -121,17 +128,17 @@ const ExploreScreen = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {problems.map((problem, index) => (
             <ProblemCard key={index} {...problem} />
           ))}
         </div>
 
         <div className="mt-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Ready to Level Up Your Coding Skills?
           </h2>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-2 md:py-3 rounded-full text-base md:text-lg font-semibold shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
             Start Coding Now
           </Button>
         </div>
@@ -142,7 +149,7 @@ const ExploreScreen = () => {
 
 export default function App() {
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="flex bg-gray-50 min-h-screen"> {/* Set min-h-screen here to ensure full height */}
       <SideBar />
       <ExploreScreen />
     </div>
