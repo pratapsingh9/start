@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import CreateTeamDialog from './customDialog';
 
 const SectionHeader = ({ title }: { title: string }) => (
   <h2 className="text-gray-400 text-xs uppercase mb-2">{title}</h2>
@@ -46,51 +47,6 @@ const TeamItem = ({ name, badge }: { name: string, badge?: string }) => (
   </li>
 );
 
-const CreateTeamDialog = () => {
-  const [teamName, setTeamName] = useState('');
-
-  const handleCreateTeam = () => {
-    // Here you would typically handle the team creation logic
-    console.log('Creating team:', teamName);
-    // Reset the input field
-    setTeamName('');
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <li className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer">
-          <PlusCircle className="w-5 h-5 text-gray-400" />
-          <span className="text-gray-300">Create New Team</span>
-        </li>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create a New JavaScript Playground</DialogTitle>
-          <DialogDescription>
-            Set up a new team with a JavaScript playground. You can collaborate and code together in real-time.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <label htmlFor="teamName" className="text-right">
-              Team Name
-            </label>
-            <Input
-              id="teamName"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <Button onClick={handleCreateTeam}>Create Team</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
 
 export const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);

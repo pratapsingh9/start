@@ -1,150 +1,116 @@
-'use client';
-import React, { useEffect, useRef, useState } from 'react';
-import { Users, Search, Code, Tag, BarChart } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+'use client'
+import RightBar from "@/components/rightbar";
+import { SideBar } from "@/components/sidebar";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { ArrowLeft, Calendar, FileText, Hash, Inbox, Info, InfoIcon, Link2, LinkIcon, Paperclip, PlusCircle, Send, SendHorizonalIcon, SendIcon, SendToBackIcon, Share2Icon, ShareIcon, Smile } from "lucide-react";
+import Image from "next/image";
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { SideBar } from '@/components/sidebar';
+import { initialMessages, Message } from "@/types/msgtypes";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+const MainGroupScreen = () => {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [newMessage, setNewMessage] = useState('');
+  const router = useRouter();
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      const newMsg: Message = {
+        id: messages.length + 1,
+        author: 'You',
+        avatar: '/placeholder.svg?height=40&width=40',
+        content: newMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages([...messages, newMsg]);
+      setNewMessage('');
+    }
+  };
 
-const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
-  const difficultyColor = {
-    Easy: 'bg-green-100 text-green-800',
-    Medium: 'bg-yellow-100 text-yellow-800',
-    Hard: 'bg-red-100 text-red-800'
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
   };
 
   return (
-    <Card className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-lg border-l-4 border-blue-500">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold text-gray-800">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center mb-2">
-          <span className={`text-xs px-2 py-1 rounded-full font-semibold ${difficultyColor[difficulty]}`}>
-            {difficulty}
-          </span>
-          <div className="flex items-center text-gray-600 text-sm">
-            <Users size={14} className="mr-1" />
-            <span>{solvedBy} solved</span>
-          </div>
+    <div className="bg-black flex-grow text-white overflow-hidden h-screen w-8/12 flex flex-col border-r border-gray-300">
+      <header className="h-16 flex items-center justify-between border-b border-gray-800 px-6">
+        <div className="h-14 w-14 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-800"
+          onClick={() => router.replace('/')}
+        >
+          <ArrowLeft className="w-6 h-6 text-white" />
         </div>
-        <div className="flex flex-wrap gap-1 mt-2">
-          {tags.map((tag, index) => (
-            <span key={index} className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full flex items-center">
-              <Tag size={10} className="mr-1" />
-              {tag}
-            </span>
+        <h1 className="text-xl font-semibold">Container</h1>
+        <div className="cursor-pointer hover:bg-gray-800">
+          <InfoIcon className="text-white" />
+        </div>
+      </header>
+
+      <main className="flex-grow flex flex-col overflow-hidden">
+        <ScrollArea className="flex-grow p-4 px-12 overflow-y-auto" >
+          {messages.map((message) => (
+            <div key={message.id} className="flex items-start my-4 space-x-3 mb-4">
+              <Avatar>
+                <AvatarImage src={message.avatar} alt={message.author} />
+                <AvatarFallback>{message.author[0]}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">{message.author}</span>
+                  <span className="text-sm text-white text-opacity-60">{message.timestamp}</span>
+                </div>
+                <p className="mt-1 text-white text-opacity-90">{message.content}</p>
+              </div>
+            </div>
           ))}
-        </div>
-      </CardContent>
-      <CardFooter className="pt-2">
-        <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-          Solve Challenge
-        </Button>
-      </CardFooter>
-    </Card>
-  );
-};
+        </ScrollArea>
+      </main>
 
-const ExploreScreen = () => {
-  const focusRef = useRef(null);
-  const [activeFilter, setActiveFilter] = useState('All');
+      <footer className="p-4 border-t border-white border-opacity-10 bg-black">
+        <div className="flex items-center space-x-2 w-full">
+          <Button variant="ghost" size="icon" className="text-white text-opacity-60">
+            <Paperclip className="w-5 h-5">
+              <input type="file" />
+            </Paperclip>
 
-  useEffect(() => {
-    if (focusRef.current) {
-      focusRef.current.focus();
-    }
-  }, []);
-
-  const problems = [
-    {
-      title: "Add 2 Cheemtos",
-      difficulty: "Easy",
-      solvedBy: "1.2M",
-      tags: ["Array", "Hash Table"],
-      problemUrl: "#"
-    },
-    {
-      title: "Add Two Numbers",
-      difficulty: "Medium",
-      solvedBy: "980K",
-      tags: ["Linked List", "Math"],
-      problemUrl: "#"
-    },
-    {
-      title: "Longest Substring Without Repeating Characters",
-      difficulty: "Medium",
-      solvedBy: "850K",
-      tags: ["Hash Table", "String", "Sliding Window"],
-      problemUrl: "#"
-    },
-    {
-      title: "Median of Two Sorted Arrays",
-      difficulty: "Hard",
-      solvedBy: "520K",
-      tags: ["Array", "Binary Search", "Divide and Conquer"],
-      problemUrl: "#"
-    },
-  ];
-
-  const filters = ['All', 'Easy', 'Medium', 'Hard'];
-
-  return (
-    <div className="flex-1 h-screen bg-gray-50 p-4 md:p-8 overflow-y-auto">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 flex items-center">
-            <Code size={36} className="mr-2 text-blue-600" />
-            CheemtCode
-          </h1>
-          <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              ref={focusRef}
-              type="text"
-              placeholder="Search problems"
-              className="pl-10 pr-4 py-2 w-full md:w-80 border-2 border-gray-200 focus:border-blue-500 rounded-full"
-            />
-          </div>
-        </div>
-
-        <div className="mb-6 flex flex-wrap gap-2">
-          {filters.map((filter) => (
-            <Button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              variant={activeFilter === filter ? "default" : "outline"}
-              className={`rounded-full ${activeFilter === filter ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
-            >
-              {filter}
-            </Button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {problems.map((problem, index) => (
-            <ProblemCard key={index} {...problem} />
-          ))}
-        </div>
-
-        <div className="mt-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-            Ready to Level Up Your Coding Skills?
-          </h2>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-2 md:py-3 rounded-full text-base md:text-lg font-semibold shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
-            Start Coding Now
           </Button>
+          <div className="flex-grow flex items-center space-x-2">
+            <Input
+              placeholder="Type a message..."
+              className="flex-grow bg-white bg-opacity-5 border-white border-opacity-10 text-white placeholder-white placeholder-opacity-60"
+              value={newMessage}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+            />
+            <Button variant="ghost" size="icon" className="text-white text-opacity-60">
+              <Smile className="w-5 h-5" />
+            </Button>
+            <Button
+              size="icon"
+              className="bg-white text-black"
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim()}
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
 
 export default function App() {
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="bg-black h-screen flex">
       <SideBar />
-      <ExploreScreen />
+      <MainGroupScreen />
+      <RightBar />
     </div>
   );
 }

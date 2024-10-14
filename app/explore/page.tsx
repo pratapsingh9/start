@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Users, Search, Code, Tag, BarChart } from 'lucide-react';
+import { Users, Search, Code, Tag } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,8 @@ const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
     Hard: 'bg-red-100 text-red-800'
   };
 
-   
   function goToProbelme() {
-    router.push('/solve/99');
+    router.push(`/solve/${problemUrl}`);
   } 
 
   return (
@@ -55,7 +54,39 @@ const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
 
 const ExploreScreen = () => {
   const focusRef = useRef(null);
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeFilter, setActiveFilter] = useState('All'); // Filter state
+  const problems = [
+    {
+      title: "Two Sum",
+      difficulty: "Easy",
+      solvedBy: "1.2M",
+      tags: ["Array", "Hash Table"],
+      problemUrl: "4"
+    },
+    {
+      title: "Add Two Numbers",
+      difficulty: "Medium",
+      solvedBy: "980K",
+      tags: ["Linked List", "Math"],
+      problemUrl: "48"
+    },
+    {
+      title: "Longest Substring Without Repeating Characters",
+      difficulty: "Medium",
+      solvedBy: "850K",
+      tags: ["Hash Table", "String", "Sliding Window"],
+      problemUrl: "81"
+    },
+    {
+      title: "Median of Two Sorted Arrays",
+      difficulty: "Hard",
+      solvedBy: "520K",
+      tags: ["Array", "Binary Search", "Divide and Conquer"],
+      problemUrl: "90"
+    },
+  ];
+
+  const filters = ['All', 'Easy', 'Medium', 'Hard'];
 
   useEffect(() => {
     if (focusRef.current) {
@@ -63,41 +94,13 @@ const ExploreScreen = () => {
     }
   }, []);
 
-  const problems = [
-    {
-      title: "Two Sum",
-      difficulty: "Easy",
-      solvedBy: "1.2M",
-      tags: ["Array", "Hash Table"],
-      problemUrl: "#"
-    },
-    {
-      title: "Add Two Numbers",
-      difficulty: "Medium",
-      solvedBy: "980K",
-      tags: ["Linked List", "Math"],
-      problemUrl: "#"
-    },
-    {
-      title: "Longest Substring Without Repeating Characters",
-      difficulty: "Medium",
-      solvedBy: "850K",
-      tags: ["Hash Table", "String", "Sliding Window"],
-      problemUrl: "#"
-    },
-    {
-      title: "Median of Two Sorted Arrays",
-      difficulty: "Hard",
-      solvedBy: "520K",
-      tags: ["Array", "Binary Search", "Divide and Conquer"],
-      problemUrl: "#"
-    },
-  ];
-
-  const filters = ['All', 'Easy', 'Medium', 'Hard'];
+  // Filter problems based on the selected filter
+  const filteredProblems = activeFilter === 'All'
+    ? problems
+    : problems.filter(problem => problem.difficulty === activeFilter);
 
   return (
-    <div className="flex-1 min-h-screen bg-gray-50 p-8 overflow-y-auto"> {/* Added overflow-y-auto */}
+    <div className="flex-1 min-h-screen bg-gray-50 p-8 overflow-y-auto">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 flex items-center">
@@ -115,11 +118,12 @@ const ExploreScreen = () => {
           </div>
         </div>
 
+        {/* Filter Buttons */}
         <div className="mb-6 flex space-x-2">
           {filters.map((filter) => (
             <Button
               key={filter}
-              onClick={() => setActiveFilter(filter)}
+              onClick={() => setActiveFilter(filter)} // Set filter on click
               variant={activeFilter === filter ? "default" : "outline"}
               className={`rounded-full ${activeFilter === filter ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
             >
@@ -128,10 +132,17 @@ const ExploreScreen = () => {
           ))}
         </div>
 
+        {/* Render filtered problems */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {problems.map((problem, index) => (
-            <ProblemCard key={index} {...problem} />
-          ))}
+          {filteredProblems.length > 0 ? (
+            filteredProblems.map((problem, index) => (
+              <ProblemCard key={index} {...problem} />
+            ))
+          ) : (
+            <div className="text-center text-gray-600 col-span-full">
+              No problems found for {activeFilter} difficulty.
+            </div>
+          )}
         </div>
 
         <div className="mt-16 text-center">
@@ -149,7 +160,7 @@ const ExploreScreen = () => {
 
 export default function App() {
   return (
-    <div className="flex bg-gray-50 min-h-screen"> {/* Set min-h-screen here to ensure full height */}
+    <div className="flex bg-gray-50 min-h-screen">
       <SideBar />
       <ExploreScreen />
     </div>

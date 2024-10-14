@@ -1,10 +1,8 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, Suspense, useEffect } from "react";
 import dynamic from "next/dynamic";
 import {
   PlayCircle,
-  Check,
-  X,
   ChevronLeft,
   ChevronRight,
   BookOpen,
@@ -13,6 +11,7 @@ import {
   Menu,
   Moon,
   Sun,
+  RefreshCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,18 +26,46 @@ type Params = {
 };
 
 const SolvePage = ({ params }: { params: Params }) => {
-  const [code, setCode] = useState(
-    `function addTwoNumbers(l1, l2) {\n  // Your code here\n}`
-  );
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
-
   const handleEditorChange = useCallback((value: string | undefined) => {
     setCode(value || "");
   }, []);
+
+  const defaultProblemCode = `function addTwoNumbers(l1, l2) {
+  // write your code here
+}
+  `;
+
+  // for getting problems on first load
+  const [code, setCode] = useState(() => {
+    const previousCode = localStorage.getItem(`code/${params.problem}`);
+    return previousCode
+      ? previousCode
+      : `function addTwoNumbers(l1, l2) {\n  // Your code here\n}`;
+  });
+
+  // Effect for getting problems on first load
+  useEffect(() => {
+    const previousCode = localStorage.getItem(`code/${params.problem}`);
+    console.log("Retrieved code from localStorage:", previousCode);
+    if (previousCode) {
+      setCode(previousCode);
+    }
+  }, [params.problem]);
+
+  // Effect for locally saving the code of the problem
+  useEffect(() => {
+    try {
+      localStorage.setItem(`code/${params.problem}`, code);
+      console.log("Saved code to localStorage:", code);
+    } catch (error) {
+      console.error("Failed to save code to localStorage:", error);
+    }
+  }, [code, params.problem]);
 
   const runCode = useCallback(() => {
     setIsRunning(true);
@@ -54,6 +81,36 @@ const SolvePage = ({ params }: { params: Params }) => {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  const handleResetCode = () => {
+    if (code == defaultProblemCode) return null;
+    setCode(defaultProblemCode);
+  };
+
+  const runCodeinIframe = useCallback(() => {
+    setIsRunning(true);
+    setOutput("");
+    setStatus("");
+
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    const iframeWindow = iframe.contentWindow as any;
+    iframeWindow.document.open();
+    iframeWindow.document.write(code);
+    iframeWindow.document.close();
+
+    const orginalConsoleLog = iframeWindow.console.log;
+    iframeWindow.console.log = (msg:any) => {
+      orginalConsoleLog.call(iframeWindow.console, msg);
+      setOutput((prevOutput) => prevOutput + "\n" + msg);
+      setStatus("success");
+    }
+
+    iframe.onload = () => {
+      setIsRunning(false);
+      document.body.remove
+    }
+  }, []);
 
   return (
     <div
@@ -108,7 +165,6 @@ const SolvePage = ({ params }: { params: Params }) => {
             >
               Solutions
             </Button>
-            
           </div>
         </header>
 
@@ -188,6 +244,12 @@ const SolvePage = ({ params }: { params: Params }) => {
               } p-3 flex justify-between items-center border-b`}
             >
               <span className="font-semibold text-gray-300">Code Editor</span>
+              <div
+                className="ml-auto mr-4 h-7 bg-gray-800 cursor-pointer w-5"
+                onClick={handleResetCode}
+              >
+                <RefreshCcw />
+              </div>
               <Button
                 onClick={runCode}
                 disabled={isRunning}
@@ -229,21 +291,29 @@ const SolvePage = ({ params }: { params: Params }) => {
               </Button>
             </div>
             <div className="flex-1 overflow-hidden">
-              <MonacoEditor
-                height="100%"
-                language="javascript"
-                theme={isDarkMode ? "vs-dark" : "light"}
-                value={code}
-                onChange={handleEditorChange}
-                options={{
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  fontSize: 14,
-                  lineNumbers: "on",
-                  automaticLayout: true,
-                  mouseWheelZoom: true,
-                }}
-              />
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center h-full text-white bg-center">
+                    Loading...
+                  </div>
+                }
+              >
+                <MonacoEditor
+                  height="100%"
+                  language="javascript"
+                  theme={isDarkMode ? "vs-dark" : "light"}
+                  value={code}
+                  onChange={handleEditorChange}
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    fontSize: 14,
+                    lineNumbers: "on",
+                    automaticLayout: true,
+                    mouseWheelZoom: true,
+                  }}
+                />
+              </Suspense>
             </div>
           </div>
         </div>
