@@ -5,12 +5,22 @@ import { FileText, Hash, Inbox, PlusCircle, Settings, Menu, X } from "lucide-rea
 import Link from 'next/link';
 import { MdExplore } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-const SectionHeader = ({ title }) => (
+const SectionHeader = ({ title }: { title: string }) => (
   <h2 className="text-gray-400 text-xs uppercase mb-2">{title}</h2>
 );
 
-const SidebarItem = ({ icon: Icon, text, badge, onClick }) => (
+const SidebarItem = ({ icon: Icon, text, badge, onClick }: { icon: React.ElementType, text: string, badge?: string, onClick?: () => void }) => (
   <li 
     className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer"
     onClick={onClick}
@@ -23,7 +33,7 @@ const SidebarItem = ({ icon: Icon, text, badge, onClick }) => (
   </li>
 );
 
-const TeamItem = ({ name, badge }) => (
+const TeamItem = ({ name, badge }: { name: string, badge?: string }) => (
   <li className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded">
     <div className="flex -space-x-1">
       <img src="/api/placeholder/24/24" alt="team-avatar" className="w-6 h-6 rounded-full border-2 border-black" />
@@ -35,6 +45,52 @@ const TeamItem = ({ name, badge }) => (
     )}
   </li>
 );
+
+const CreateTeamDialog = () => {
+  const [teamName, setTeamName] = useState('');
+
+  const handleCreateTeam = () => {
+    // Here you would typically handle the team creation logic
+    console.log('Creating team:', teamName);
+    // Reset the input field
+    setTeamName('');
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <li className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer">
+          <PlusCircle className="w-5 h-5 text-gray-400" />
+          <span className="text-gray-300">Create New Team</span>
+        </li>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create a New JavaScript Playground</DialogTitle>
+          <DialogDescription>
+            Set up a new team with a JavaScript playground. You can collaborate and code together in real-time.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="teamName" className="text-right">
+              Team Name
+            </label>
+            <Input
+              id="teamName"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={handleCreateTeam}>Create Team</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,8 +135,8 @@ export const SideBar = () => {
         <nav className="mb-6 mt-6">
           <SectionHeader title="General" />
           <ul>
-            <SidebarItem icon={Inbox} text="Inbox" badge="3" onClick={undefined} />
-            <SidebarItem icon={MdExplore} text="Explore" onClick={() => router.replace('/explore')} badge={undefined} />
+            <SidebarItem icon={Inbox} text="Inbox" badge="3" />
+            <SidebarItem icon={MdExplore} text="Explore" onClick={() => router.replace('/explore')} />
           </ul>
         </nav>
 
@@ -88,9 +144,9 @@ export const SideBar = () => {
           <SectionHeader title="Teams" />
           <ul>
             {["UI/UX Teams", "Research Gang", "Talks Project"].map((team, index) => (
-              <TeamItem key={index} name={team} badge={index === 2 ? "24" : null} />
+              <TeamItem key={index} name={team} badge={index === 2 ? "24" : undefined} />
             ))}
-            <SidebarItem icon={PlusCircle} text="Create New Team" badge={undefined} onClick={undefined}  />
+            <CreateTeamDialog />
           </ul>
         </nav>
 
@@ -98,9 +154,9 @@ export const SideBar = () => {
           <SectionHeader title="Channel" />
           <ul>
             {["Mobile Designer", "Front-End Community", "UI/UX Community", "Web Designer"].map((channel, index) => (
-              <SidebarItem key={index} icon={Hash} text={channel} badge={undefined} onClick={undefined} />
+              <SidebarItem key={index} icon={Hash} text={channel} />
             ))}
-            <SidebarItem icon={PlusCircle} text="Make a Channel" badge={undefined} onClick={undefined}  />
+            <SidebarItem icon={PlusCircle} text="Make a Channel" />
           </ul>
         </nav>
 

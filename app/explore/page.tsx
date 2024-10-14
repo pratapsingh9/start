@@ -17,7 +17,7 @@ const ProblemCard = ({ title, difficulty, solvedBy, tags, problemUrl }) => {
 
    
   function goToProbelme() {
-    router.push('/solve');
+    router.push('/solve/99');
   } 
 
   return (
