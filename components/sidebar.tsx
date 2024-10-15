@@ -1,20 +1,10 @@
 'use client'
 import React, { useState } from 'react';
 import { ExitIcon } from "@radix-ui/react-icons";
-import { FileText, Hash, Inbox, PlusCircle, Settings, Menu, X } from "lucide-react";
+import { Hash, Inbox, PlusCircle, Settings, Menu, X } from "lucide-react";
 import Link from 'next/link';
 import { MdExplore } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import CreateTeamDialog from './customDialog';
 
 const SectionHeader = ({ title }: { title: string }) => (

@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 // Define the validation schema
 const formSchema = z.object({
@@ -21,26 +22,20 @@ const formSchema = z.object({
 const CreateTeamDialog = () => {
   const [teamName, setTeamName] = useState("");
   const [error, setError] = useState<string | null>(null); // State for error message
-
-  const handleCreateTeam = () => {
+  const router = useRouter();
+  function handleCreateTeam() {
     console.log("Creating team:", teamName);
-    setTeamName("");
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+    alert(`Team Created ${teamName}`);
+    router.push(`/playgrounds/${teamName}`);
+  }
+  const handleSubmit = (e: React.FormEvent<any>) => {
+    e.preventDefault(); // preventing refresh of react page
     try {
-      formSchema.parse({ teamName });
-      setError(null);
+      formSchema.parse({ teamName }); // Validate the form data
       handleCreateTeam();
-      console.log("Form submitted successfully");
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        setError(err.errors[0].message);
-      } else{
-        throw new Error(err);
-      }
+    } catch (error) {
+      alert(error.toString());
+      console.log(error);
     }
   };
 
