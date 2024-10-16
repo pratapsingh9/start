@@ -1,126 +1,127 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Terminal as XTerm } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import { WebLinksAddon } from "xterm-addon-web-links";
-import "xterm/css/xterm.css";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-const Terminal = ({ output }) => {
-  const terminalRef = useRef(null);
-  const [terminal, setTerminalInstance] = useState(null);
+interface TerminalProps {
+  output: string;
+}
 
-  const openMyGithub = () => {
-    window.open("https://github.com/pratapsingh9");
-  };
+type Command = (args: string[]) => void;
 
-  const initializeTerminal = useCallback(() => {
-    const term = new XTerm({
-      cursorBlink: true,
-      theme: {
-        background: "#1e1e1e",
-        foreground: "#ffffff",
-      },
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-      fontSize: 14,
-    });
+interface Commands {
+  [key: string]: Command;
+}
 
-    const fitAddon = new FitAddon();
-    const webLinksAddon = new WebLinksAddon();
+const Terminal: React.FC<TerminalProps> = ({ output }) => {
+  const [history, setHistory] = useState<string[]>([]);
+  const [currentLine, setCurrentLine] = useState<string>('');
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    term.loadAddon(fitAddon);
-    term.loadAddon(webLinksAddon);
-
-    term.open(terminalRef.current);
-    fitAddon.fit();
-    setTerminalInstance(term);
-
-    term.writeln("Welcome to the Web IDE Terminal");
-    term.writeln('Type "help" for available commands');
-    term.write("$ ");
-
-    return () => {
-      term.dispose();
-    };
-  }, [setTerminalInstance]);
-
-  useEffect(initializeTerminal, [initializeTerminal]);
-
-  const handleCommand = useCallback(
-    (command) => {
-      const commands = {
-        clear: () => terminal.clear(),
-        cls: () => terminal.clear(),
-        github: () => openMyGithub(),
-        creator: () => openMyGithub(),
-        help: () => {
-          terminal.writeln("Available commands:");
-          terminal.writeln("  github - creator of the website");
-          terminal.writeln("  clear - Clear the terminal");
-          terminal.writeln("  help - Show this help message");
-          terminal.writeln("  echo <message> - Print a message");
-          terminal.writeln("  date - Show current date and time");
-          setTimeout(() => {
-            terminal.clear();
-          }, 1000);
-        },
-        echo: (args) => terminal.writeln(args.join(" ")),
-        date: () => terminal.writeln(new Date().toLocaleString()),
-      };
-
-      const [cmd, ...args] = command.split(" ");
-      if (commands[cmd]) {
-        commands[cmd](args);
-      } else {
-        terminal.writeln(`Command not found: ${cmd}`);
-      }
-    },
-    [terminal]
-  );
-
-  useEffect(() => {
-    if (!terminal) return;
-
-    const handleInput = (data) => {
-      if (data === "\r") {
-        const currentLine = terminal.buffer.active
-          .getLine(terminal.buffer.active.cursorY)
-          .translateToString();
-        const input = currentLine
-          .slice(currentLine.lastIndexOf("$ ") + 2)
-          .trim();
-
-        terminal.write("\r\n");
-        if (input) {
-          handleCommand(input);
-        }
-        terminal.write("$ ");
-      } else {
-        terminal.write(data);
-      }
-    };
-
-    terminal.onData(handleInput);
-  }, [terminal, handleCommand]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (terminal) {
-        const fitAddon = terminal.getAddon("FitAddon");
-        fitAddon.fit();
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [terminal]);
-
-  useEffect(() => {
-    if (terminal && output) {
-      terminal.writeln(output); // Display the output from the code run
-      terminal.write("$ "); // Prompt for next command
+  const scrollToBottom = useCallback((): void => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [terminal, output]);
+  }, []);
 
-  return <div ref={terminalRef} className="w-full h-64" />;
+  const focusInput = useCallback((): void => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const addToHistory = useCallback((line: string): void => {
+    setHistory(prev => [...prev, line]);
+  }, []);
+
+  const handleCommand = useCallback((command: string): void => {
+    const commands: Commands = {
+      clear: () => setHistory([]),
+      cls: () => setHistory([]),
+      github: () => window.open('https://github.com/pratapsingh9', '_blank'),
+      creator: () => window.open('https://github.com/pratapsingh9', '_blank'),
+      help: () => {
+        addToHistory('Available commands:');
+        addToHistory('  github - Open creator\'s GitHub profile');
+        addToHistory('  clear/cls - Clear the terminal');
+        addToHistory('  help - Show this help message');
+        addToHistory('  echo <message> - Print a message');
+        addToHistory('  date - Show current date and time');
+      },
+      echo: (args: string[]) => addToHistory(args.join(' ')),
+      date: () => addToHistory(new Date().toLocaleString()),
+    };
+
+    const [cmd, ...args] = command.split(' ');
+    if (cmd in commands) {
+      commands[cmd](args);
+    } else {
+      addToHistory(`Command not found: ${cmd}`);
+    }
+  }, [addToHistory]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') {
+      const trimmedLine = currentLine.trim();
+      addToHistory(`$ ${trimmedLine}`);
+      if (trimmedLine) {
+        handleCommand(trimmedLine);
+      }
+      setCurrentLine('');
+    }
+  }, [currentLine, addToHistory, handleCommand]);
+
+  useEffect(() => {
+    addToHistory('Welcome to the Modern Web IDE Terminal');
+    addToHistory('Type "help" for available commands');
+  }, [addToHistory]);
+
+  useEffect(() => {
+    if (output) {
+      output.split('\n').forEach(line => {
+        if (line.trim() !== '') {
+          addToHistory(line);
+        }
+      });
+    }
+  }, [output, addToHistory]);
+
+  useEffect(scrollToBottom, [history, scrollToBottom]);
+  useEffect(focusInput, [focusInput]);
+
+  return (
+    <div
+      className="bg-black text-white font-mono p-4 rounded-lg shadow-lg"
+      style={{ height: '400px', overflowY: 'auto', border: 'none' }} // Removed border
+      onClick={focusInput}
+      ref={terminalRef}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex space-x-2">
+          <div className="w-3 h-3 rounded-full bg-red-500 cursor-pointer" title="Close"></div>
+          <div className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer" title="Minimize"></div>
+          <div className="w-3 h-3 rounded-full bg-green-500 cursor-pointer" title="Maximize"></div>
+        </div>
+      </div>
+      <div className="terminal-content">
+        {history.map((line, index) => (
+          <div key={index} className="mb-1">
+            {line}
+          </div>
+        ))}
+        <div className="flex items-center">
+          <span className="text-green-500 mr-2">$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={currentLine}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentLine(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="bg-black outline-none flex-grow text-white caret-white"
+            placeholder="Type your command here..."
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Terminal;

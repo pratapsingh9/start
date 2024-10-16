@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const user = { id: '1', name: 'John Doe', email: credentials?.email };
+        const user = { id: '1', name: 'cjhon', email: credentials?.email };
         return user || null;
       },
     }),

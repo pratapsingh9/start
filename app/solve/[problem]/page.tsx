@@ -67,17 +67,33 @@ const SolvePage = ({ params }: { params: Params }) => {
     }
   }, [code, params.problem]);
 
-  const runCode = useCallback(() => {
+  const runCode = useCallback(async () => {
     setIsRunning(true);
     setOutput("");
     setStatus("");
+    try {
+      const response = await fetch("http://127.0.0.1:8787/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
 
-    setTimeout(() => {
-      setOutput("Output: [7, 0, 8]");
-      setStatus("success");
+      const result = await response.json();
+      if (result.error) {
+        setOutput(`Error: ${result.error}`);
+        setStatus("error");
+      } else {
+        setOutput(result.output);
+        setStatus("success");
+      }
+    } catch (error) {
+      setOutput("Error: Failed to execute code");
+      setStatus("error");
+    } finally {
+      alert(output)
       setIsRunning(false);
-    }, 1500);
-  }, []);
+    }
+  }, [code]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
@@ -100,16 +116,16 @@ const SolvePage = ({ params }: { params: Params }) => {
     iframeWindow.document.close();
 
     const orginalConsoleLog = iframeWindow.console.log;
-    iframeWindow.console.log = (msg:any) => {
+    iframeWindow.console.log = (msg: any) => {
       orginalConsoleLog.call(iframeWindow.console, msg);
       setOutput((prevOutput) => prevOutput + "\n" + msg);
       setStatus("success");
-    }
+    };
 
     iframe.onload = () => {
       setIsRunning(false);
-      document.body.remove
-    }
+      document.body.remove;
+    };
   }, []);
 
   return (
@@ -168,7 +184,7 @@ const SolvePage = ({ params }: { params: Params }) => {
           </div>
         </header>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden cursor-pointer">
           <div
             className={`w-[45%] border-r ${
               isDarkMode ? "border-gray-700" : "border-gray-200"
@@ -230,11 +246,11 @@ const SolvePage = ({ params }: { params: Params }) => {
                     {`Input: l1 = [2,4,3], l2 = [5,6,4]\nOutput: [7,0,8]\nExplanation: 342 + 465 = 807.`}
                   </code>
                 </pre>
+                <div className="mx-auto mt-4"></div>
               </TabsContent>
               {/* Solution and Submission tabs content remain similar */}
             </Tabs>
           </div>
-
           <div className="flex-1 flex flex-col overflow-hidden">
             <div
               className={`${
