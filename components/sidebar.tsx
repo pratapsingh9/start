@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React, { useState } from 'react';
 import { ExitIcon } from "@radix-ui/react-icons";
 import { Hash, Inbox, PlusCircle, Settings, Menu, X } from "lucide-react";
@@ -37,7 +38,6 @@ const TeamItem = ({ name, badge }: { name: string, badge?: string }) => (
   </li>
 );
 
-
 export const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -45,6 +45,7 @@ export const SideBar = () => {
 
   return (
     <>
+      {/* Toggle button for small screens */}
       <button 
         className='lg:hidden fixed top-4 left-4 z-20 p-2 rounded-md bg-gray-800 text-gray-200'
         onClick={toggleSidebar}
@@ -52,6 +53,7 @@ export const SideBar = () => {
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
+      {/* Sidebar Overlay for mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black opacity-50 z-10 lg:hidden"
@@ -59,13 +61,14 @@ export const SideBar = () => {
         />
       )}
 
-      <aside className={`
-        w-64 h-screen bg-black border-r border-gray-800 flex flex-col p-4
+      {/* Sidebar */}
+      <aside className={`w-64 h-screen bg-black border-r border-gray-800 flex flex-col p-4
         fixed top-0 left-0 z-20 transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         ${isOpen ? 'overflow-y-auto' : ''}
-        lg:translate-x-0 lg:static lg:w-2/12
-      `}>
+        lg:translate-x-0 lg:static lg:w-2/12`}
+      >
+        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-1">
             <div className="bg-gray-800 h-8 w-8 rounded-full flex items-center justify-center">
@@ -78,6 +81,7 @@ export const SideBar = () => {
           </Link>
         </div>
 
+        {/* General Navigation */}
         <nav className="mb-6 mt-6">
           <SectionHeader title="General" />
           <ul>
@@ -86,6 +90,7 @@ export const SideBar = () => {
           </ul>
         </nav>
 
+        {/* Teams */}
         <nav className="mb-6">
           <SectionHeader title="Teams" />
           <ul>
@@ -96,6 +101,7 @@ export const SideBar = () => {
           </ul>
         </nav>
 
+        {/* Channels */}
         <nav className="mb-6">
           <SectionHeader title="Channel" />
           <ul>
@@ -106,6 +112,7 @@ export const SideBar = () => {
           </ul>
         </nav>
 
+        {/* User Info */}
         <div className="mt-auto bg-gray-900 px-2 py-2 rounded-md">
           <div className="flex items-center justify-between space-x-2">
             <div className="flex">

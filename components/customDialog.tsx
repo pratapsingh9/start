@@ -25,7 +25,6 @@ const CreateTeamDialog = () => {
   const router = useRouter();
   function handleCreateTeam() {
     console.log("Creating team:", teamName);
-    alert(`Team Created ${teamName}`);
     router.push(`/playgrounds/${teamName}`);
   }
   const handleSubmit = (e: React.FormEvent<any>) => {
