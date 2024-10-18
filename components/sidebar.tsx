@@ -1,135 +1,231 @@
-'use client';
-
-import React, { useState } from 'react';
+'use client'
+import React, { useState } from "react";
 import { ExitIcon } from "@radix-ui/react-icons";
-import { Hash, Inbox, PlusCircle, Settings, Menu, X } from "lucide-react";
-import Link from 'next/link';
-import { MdExplore } from 'react-icons/md';
-import { useRouter } from 'next/navigation';
-import CreateTeamDialog from './customDialog';
+import { Hash, Inbox, PlusCircle, Settings, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { MdExplore } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import CreateTeamDialog from "./customDialog";
 
-const SectionHeader = ({ title }: { title: string }) => (
-  <h2 className="text-gray-400 text-xs uppercase mb-2">{title}</h2>
+const SectionHeader = ({ title, children }) => (
+  <div className="flex items-center justify-between mb-2">
+    <h2 className="text-gray-400 text-xs uppercase">{title}</h2>
+    {children}
+  </div>
 );
 
-const SidebarItem = ({ icon: Icon, text, badge, onClick }: { icon: React.ElementType, text: string, badge?: string, onClick?: () => void }) => (
-  <li 
-    className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer"
+const SidebarItem = ({ icon: Icon, text, badge, onClick, active = false }) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <li
+          className={`flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-200 ${
+            active ? "bg-gray-800" : ""
+          }`}
+          onClick={onClick}
+        >
+          <Icon className={`w-5 h-5 ${active ? "text-white" : "text-gray-400"}`} />
+          <span className={`text-sm ${active ? "text-white" : "text-gray-300"}`}>{text}</span>
+          {badge && (
+            <span className="ml-auto text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
+              {badge}
+            </span>
+          )}
+        </li>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{text}</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+
+const TeamItem = ({ name, badge, active = false, onClick }) => (
+  <li
+    className={`flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded cursor-pointer transition-colors duration-200 ${
+      active ? "bg-gray-800" : ""
+    }`}
     onClick={onClick}
   >
-    <Icon className="w-5 h-5 text-gray-400" />
-    <span className="text-gray-300">{text}</span>
+    <Avatar className="w-6 h-6">
+      <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${name}`} />
+      <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+    </Avatar>
+    <span className={`text-sm ${active ? "text-white" : "text-gray-300"}`}>{name}</span>
     {badge && (
-      <span className="ml-auto text-sm bg-gray-800 px-2 py-1 rounded-full text-gray-300">{badge}</span>
+      <span className="ml-auto text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
+        {badge}
+      </span>
     )}
   </li>
 );
 
-const TeamItem = ({ name, badge }: { name: string, badge?: string }) => (
-  <li className="flex items-center space-x-2 mb-2 hover:bg-gray-800 p-2 rounded">
-    <div className="flex -space-x-1">
-      <img src="/api/placeholder/24/24" alt="team-avatar" className="w-6 h-6 rounded-full border-2 border-black" />
-      <img src="/api/placeholder/24/24" alt="team-avatar" className="w-6 h-6 rounded-full border-2 border-black" />
+const CollapsibleSection = ({ title, children }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="mb-6">
+      <SectionHeader title={title}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-0 h-4 w-4"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? (
+            <ChevronDown className="h-4 w-4 text-gray-400" />
+          ) : (
+            <ChevronRight className="h-4 w-4 text-gray-400" />
+          )}
+        </Button>
+      </SectionHeader>
+      {isOpen && children}
     </div>
-    <span className="text-gray-300">{name}</span>
-    {badge && (
-      <span className="ml-auto text-sm bg-gray-800 px-2 py-1 rounded-full text-gray-300">{badge}</span>
-    )}
-  </li>
-);
+  );
+};
 
 export const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState("Inbox");
+  const [activeTeam, setActiveTeam] = useState(null);
   const router = useRouter();
+
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const handleItemClick = (item) => {
+    setActiveItem(item);
+    if (item === "Explore") {
+      router.replace("/explore");
+    }
+  };
+
+  const handleTeamClick = (team) => {
+    setActiveTeam(team);
+  };
 
   return (
     <>
-      {/* Toggle button for small screens */}
-      <button 
-        className='lg:hidden fixed top-4 left-4 z-20 p-2 rounded-md bg-gray-800 text-gray-200'
+      <Button
+        variant="outline"
+        size="icon"
+        className="lg:hidden fixed top-4 left-4 z-20"
         onClick={toggleSidebar}
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+        {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+      </Button>
 
-      {/* Sidebar Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-10 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
-      {/* Sidebar */}
-      <aside className={`w-64 h-screen bg-black border-r border-gray-800 flex flex-col p-4
+      <aside
+        className={`w-64 h-screen bg-black border-r border-gray-800 flex flex-col p-4
         fixed top-0 left-0 z-20 transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        ${isOpen ? 'overflow-y-auto' : ''}
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        ${isOpen ? "overflow-y-auto" : ""}
         lg:translate-x-0 lg:static lg:w-2/12`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-1">
-            <div className="bg-gray-800 h-8 w-8 rounded-full flex items-center justify-center">
-              <span className="text-gray-200 font-bold">N</span>
-            </div>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-2">
+            <Avatar>
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
             <h1 className="text-xl font-bold text-gray-200">Nexus</h1>
           </div>
-          <Link href="/settings" className='h-10 w-10 rounded-full cursor-pointer hover:bg-gray-800 flex items-center justify-center'>
-            <Settings className="text-gray-400" />
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => router.push("/settings")}
+                >
+                  <Settings className="h-5 w-5 text-gray-400" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Settings</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
-        {/* General Navigation */}
-        <nav className="mb-6 mt-6">
-          <SectionHeader title="General" />
+        <CollapsibleSection title="General">
           <ul>
-            <SidebarItem icon={Inbox} text="Inbox" badge="3" />
-            <SidebarItem icon={MdExplore} text="Explore" onClick={() => router.replace('/explore')} />
+            <SidebarItem
+              icon={Inbox}
+              text="Inbox"
+              badge="3"
+              active={activeItem === "Inbox"}
+              onClick={() => handleItemClick("Inbox")}
+            />
+            <SidebarItem
+              icon={MdExplore}
+              text="Explore"
+              active={activeItem === "Explore"}
+              onClick={() => handleItemClick("Explore")} badge={undefined}            />
           </ul>
-        </nav>
+        </CollapsibleSection>
 
-        {/* Teams */}
-        <nav className="mb-6">
-          <SectionHeader title="Teams" />
+        <CollapsibleSection title="Teams">
           <ul>
             {["UI/UX Teams", "Research Gang", "Talks Project"].map((team, index) => (
-              <TeamItem key={index} name={team} badge={index === 2 ? "24" : undefined} />
+              <TeamItem
+                key={index}
+                name={team}
+                badge={index === 2 ? "24" : undefined}
+                active={activeTeam === team}
+                onClick={() => handleTeamClick(team)}
+              />
             ))}
             <CreateTeamDialog />
           </ul>
-        </nav>
+        </CollapsibleSection>
 
-        {/* Channels */}
-        <nav className="mb-6">
-          <SectionHeader title="Channel" />
+        <CollapsibleSection title="Channels">
           <ul>
-            {["Mobile Designer", "Front-End Community", "UI/UX Community", "Web Designer"].map((channel, index) => (
-              <SidebarItem key={index} icon={Hash} text={channel} />
-            ))}
-            <SidebarItem icon={PlusCircle} text="Make a Channel" />
+            {["Mobile Designer", "Front-End Community", "UI/UX Community", "Web Designer"].map(
+              (channel, index) => (
+                <SidebarItem
+                  key={index}
+                  icon={Hash}
+                  text={channel}
+                  active={activeItem === channel}
+                  onClick={() => handleItemClick(channel)} badge={undefined}                />
+              )
+            )}
+            <SidebarItem icon={PlusCircle} text="Make a Channel" onClick={() => { } } badge={undefined} />
           </ul>
-        </nav>
+        </CollapsibleSection>
 
-        {/* User Info */}
-        <div className="mt-auto bg-gray-900 px-2 py-2 rounded-md">
+        <div className="mt-auto bg-gray-900 px-3 py-2 rounded-md">
           <div className="flex items-center justify-between space-x-2">
-            <div className="flex">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZl4UHNZcbXqz45eSRCOotZcVMO0fdmX1Fbw&s"
-                alt="user-avatar"
-                className="w-8 h-8 rounded-full mr-2"
-              />
+            <div className="flex items-center">
+              <Avatar className="w-8 h-8 mr-2">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>KH</AvatarFallback>
+              </Avatar>
               <div>
-                <p className="text-sm font-medium text-gray-200">Kevin Heart</p>
+                <p className="text-sm font-medium text-gray-200">Kevin Hart</p>
                 <p className="text-xs text-gray-400">On duty</p>
               </div>
             </div>
-            <ExitIcon className="text-2xl text-gray-400" />
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <ExitIcon className="h-5 w-5 text-gray-400" />
+            </Button>
           </div>
         </div>
       </aside>
     </>
   );
 };
+
+export default SideBar;
