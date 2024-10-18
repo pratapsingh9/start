@@ -18,7 +18,7 @@ export default function SigninPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/home");
+      router.replace("/explore");
     }
   }, [status, router]);
 

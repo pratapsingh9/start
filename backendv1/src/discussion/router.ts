@@ -5,8 +5,11 @@ const discussRouter = new Hono();
 discussRouter.post('/')
 
 
-discussRouter.post('/create',(c:Context)=> {
+discussRouter.post('/create',async(c:Context)=> {
+    const body = await c.req.parseBody();
+    
     return c.json({
-        message:"create discuss"
+        message:"Discussion created successfully",
+        data:body
     })
 })
