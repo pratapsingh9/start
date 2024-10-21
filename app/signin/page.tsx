@@ -90,12 +90,12 @@ export default function SigninPage() {
               </Button>
             </div>
             <div className="hidden md:flex flex-col justify-center items-center bg-gray-100 p-8 rounded-lg">
-              <h3 className="text-2xl font-bold mb-4">Cheem Tcode</h3>
+              <h3 className="text-2xl font-bold mb-4">Cheemtcode</h3>
               <p className="text-lg text-center mb-4">"Code with fun and passion!"</p>
               <blockquote className="italic text-gray-600">
                 "The customer service I received was exceptional. The support team went above and beyond to address my concerns."
               </blockquote>
-              <p className="mt-2 font-semibold">- Jules Winnfield, CEO, Acme Inc.</p>
+              <p className="mt-2 font-semibold">- Jules Winfield, CEO, Acme Inc.</p>
             </div>
           </div>
         </CardContent>

@@ -1,14 +1,30 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import { ExitIcon } from "@radix-ui/react-icons";
-import { Hash, Inbox, PlusCircle, Settings, Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Hash,
+  Inbox,
+  PlusCircle,
+  Settings,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import { MdExplore } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import CreateTeamDialog from "./customDialog";
+// import { getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const SectionHeader = ({ title, children }) => (
   <div className="flex items-center justify-between mb-2">
@@ -27,8 +43,14 @@ const SidebarItem = ({ icon: Icon, text, badge, onClick, active = false }) => (
           }`}
           onClick={onClick}
         >
-          <Icon className={`w-5 h-5 ${active ? "text-white" : "text-gray-400"}`} />
-          <span className={`text-sm ${active ? "text-white" : "text-gray-300"}`}>{text}</span>
+          <Icon
+            className={`w-5 h-5 ${active ? "text-white" : "text-gray-400"}`}
+          />
+          <span
+            className={`text-sm ${active ? "text-white" : "text-gray-300"}`}
+          >
+            {text}
+          </span>
           {badge && (
             <span className="ml-auto text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
               {badge}
@@ -51,10 +73,14 @@ const TeamItem = ({ name, badge, active = false, onClick }) => (
     onClick={onClick}
   >
     <Avatar className="w-6 h-6">
-      <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${name}`} />
+      <AvatarImage
+        src={`https://api.dicebear.com/6.x/initials/svg?seed=${name}`}
+      />
       <AvatarFallback>{name.charAt(0)}</AvatarFallback>
     </Avatar>
-    <span className={`text-sm ${active ? "text-white" : "text-gray-300"}`}>{name}</span>
+    <span className={`text-sm ${active ? "text-white" : "text-gray-300"}`}>
+      {name}
+    </span>
     {badge && (
       <span className="ml-auto text-xs bg-gray-700 px-2 py-1 rounded-full text-gray-300">
         {badge}
@@ -91,13 +117,14 @@ export const SideBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("Inbox");
   const [activeTeam, setActiveTeam] = useState(null);
+  const { data } = useSession();
   const router = useRouter();
-
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleItemClick = (item) => {
     setActiveItem(item);
     if (item === "Explore") {
+      router.prefetch("/explore");
       router.replace("/explore");
     }
   };
@@ -133,11 +160,11 @@ export const SideBar = () => {
       >
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
-            <Avatar>
+            {/* <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <h1 className="text-xl font-bold text-gray-200">Nexus</h1>
+            </Avatar> */}
+            <h1 className="text-xl font-bold text-gray-200 ml-4">CheemtCode</h1>
           </div>
           <TooltipProvider>
             <Tooltip>
@@ -171,38 +198,52 @@ export const SideBar = () => {
               icon={MdExplore}
               text="Explore"
               active={activeItem === "Explore"}
-              onClick={() => handleItemClick("Explore")} badge={undefined}            />
+              onClick={() => handleItemClick("Explore")}
+              badge={undefined}
+            />
           </ul>
         </CollapsibleSection>
 
         <CollapsibleSection title="Teams">
           <ul>
-            {["UI/UX Teams", "Research Gang", "Talks Project"].map((team, index) => (
-              <TeamItem
-                key={index}
-                name={team}
-                badge={index === 2 ? "24" : undefined}
-                active={activeTeam === team}
-                onClick={() => handleTeamClick(team)}
-              />
-            ))}
+            {["UI/UX Teams", "Research Gang", "Talks Project"].map(
+              (team, index) => (
+                <TeamItem
+                  key={index}
+                  name={team}
+                  badge={index === 2 ? "24" : undefined}
+                  active={activeTeam === team}
+                  onClick={() => handleTeamClick(team)}
+                />
+              )
+            )}
             <CreateTeamDialog />
           </ul>
         </CollapsibleSection>
 
         <CollapsibleSection title="Channels">
           <ul>
-            {["Mobile Designer", "Front-End Community", "UI/UX Community", "Web Designer"].map(
-              (channel, index) => (
-                <SidebarItem
-                  key={index}
-                  icon={Hash}
-                  text={channel}
-                  active={activeItem === channel}
-                  onClick={() => handleItemClick(channel)} badge={undefined}                />
-              )
-            )}
-            <SidebarItem icon={PlusCircle} text="Make a Channel" onClick={() => { } } badge={undefined} />
+            {[
+              "Mobile Designer",
+              "Front-End Community",
+              "UI/UX Community",
+              "Web Designer",
+            ].map((channel, index) => (
+              <SidebarItem
+                key={index}
+                icon={Hash}
+                text={channel}
+                active={activeItem === channel}
+                onClick={() => handleItemClick(channel)}
+                badge={undefined}
+              />
+            ))}
+            <SidebarItem
+              icon={PlusCircle}
+              text="Make a Channel"
+              onClick={() => {}}
+              badge={undefined}
+            />
           </ul>
         </CollapsibleSection>
 
@@ -210,8 +251,7 @@ export const SideBar = () => {
           <div className="flex items-center justify-between space-x-2">
             <div className="flex items-center">
               <Avatar className="w-8 h-8 mr-2">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>KH</AvatarFallback>
+                <AvatarImage src={data?.user?.image} />
               </Avatar>
               <div>
                 <p className="text-sm font-medium text-gray-200">Kevin Hart</p>

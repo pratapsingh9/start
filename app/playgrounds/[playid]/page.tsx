@@ -4,9 +4,8 @@ import React, { useState, useCallback, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { PlayCircle, RefreshCcw } from "lucide-react";
-import { SideBar } from "@/components/sidebar";
 import Terminal from "@/components/terminal";
-
+import SideBar from "@/components/sidebar";
 type PlaygroundProps = {
   params: {
     playid: string;

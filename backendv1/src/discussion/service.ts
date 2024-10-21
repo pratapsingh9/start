@@ -2,7 +2,6 @@ import { Message } from "@prisma/client";
 import AWS from "aws-sdk";
 import prismaClient from "../utiils/prismaClient";
 
-// Configure AWS S3
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -10,14 +9,22 @@ const s3 = new AWS.S3({
 });
 
 class DiscussionService {
-  // Create a new discussion
-  async createDiscussion(
+  static async postInDisuccsion(
+    content: string,
+    title: string,
+    image?: Buffer
+  ) {
+    try {
+      const message = prismaClient.community;
+    } catch (error) {}
+  }
+
+  static async createDiscussion(
     content: string,
     authorId: number,
     communityId: number
   ): Promise<Message> {
     try {
-      // Create the discussion message in the database
       const message = await prismaClient.message.create({
         data: {
           content,
@@ -33,8 +40,9 @@ class DiscussionService {
     }
   }
 
-  // Get a discussion by its ID
-  async getDiscussionById(discussionId: number): Promise<Message | null> {
+  static async getDiscussionById(
+    discussionId: number
+  ): Promise<Message | null> {
     try {
       const discussion = await prismaClient.message.findUnique({
         where: { id: discussionId },
@@ -51,7 +59,6 @@ class DiscussionService {
     }
   }
 
-  // Upload a file to S3
   static async uploadFileToS3(
     discussionId: number,
     discussionName: string,
@@ -59,7 +66,6 @@ class DiscussionService {
     contentType: string // Ensure you also pass the content type
   ) {
     try {
-      // Upload the file to S3
       const uploadResult = await s3
         .upload({
           Bucket: process.env.AWS_S3_BUCKET_NAME as string,
@@ -76,8 +82,7 @@ class DiscussionService {
     }
   }
 
-  // Disconnect from Prisma client (useful for graceful shutdown)
-  async disconnect() {
+  static async disconnect() {
     try {
       await prismaClient.$disconnect();
     } catch (error) {

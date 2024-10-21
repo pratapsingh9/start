@@ -27,6 +27,8 @@ class QuestionService {
     });
     return question;
   }
+
+
   static async disconnect() {
     await prismaCLient.$disconnect();
   }

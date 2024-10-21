@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { SideBar } from "@/components/sidebar";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+
 const steps = [
   { title: "Basic Info", icon: Users },
   { title: "Description", icon: Search },

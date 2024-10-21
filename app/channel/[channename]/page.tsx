@@ -2,13 +2,7 @@
 import RightBar from "@/components/rightbar";
 import { SideBar } from "@/components/sidebar";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import {
-  ArrowLeft,
-  InfoIcon,
-  Paperclip,
-  Send,
-  Smile,
-} from "lucide-react";
+import { ArrowLeft, InfoIcon, Paperclip, Send, Smile } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,9 +16,9 @@ type paramProps = {
   params: {
     channename: string;
   };
-}
+};
 
-const MainGroupScreen = ({name}) => {
+const MainGroupScreen = ({ name }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const router = useRouter();
@@ -95,7 +89,7 @@ const MainGroupScreen = ({name}) => {
           ))}
         </ScrollArea>
       </main>
-      
+
       <footer className="p-4 border-t border-white border-opacity-10 bg-black">
         <div className="flex items-center space-x-2 w-full">
           <Button
@@ -137,7 +131,7 @@ const MainGroupScreen = ({name}) => {
   );
 };
 
-export default function App({params}:paramProps) {
+export default function App({ params }: paramProps) {
   return (
     <div className="bg-black h-screen flex">
       <SideBar />

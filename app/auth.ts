@@ -1,6 +1,8 @@
-import type { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import type { Session } from "next-auth";
+import type { TokenSet } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,13 +11,13 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'text', placeholder: 'Your email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "text", placeholder: "Your email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = { id: '1', name: 'cjhon', email: credentials?.email };
+        const user = { id: "1", name: "cjhon", email: credentials?.email };
         return user || null;
       },
     }),
@@ -24,17 +26,29 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name; // Add name to token
+        token.email = user.email; // Add email to token
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: any }) {
+
+    async session({ session, token }: {
+      session: any,
+      token: any  
+    }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user = {
+          ...session.user,
+          id: token.id as string,    
+          name: token.name as string,
+          email: token.email as string,
+        };
       }
       return session;
     },
+
   },
   pages: {
-    signIn: '/signin',
+    signIn: "/signin", // Custom sign-in page
   },
 };
