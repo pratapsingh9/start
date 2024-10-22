@@ -1,5 +1,4 @@
 "use client";
-
 import SideBar from "@/components/sidebar";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";

@@ -3,7 +3,22 @@ import UserServices from "./service";
 
 const userRouter = new Hono();
 
-userRouter.post("/", async (c) => {
+userRouter.get("/all", async (c) => {
+  try {
+    const users: any = await UserServices.getAllUsers();
+    if (users.status === 500) {
+      throw new Error(users.error);
+    }
+    return c.json(users);
+  } catch (error: any) {
+    return c.json(
+      { message: "Error fetching users", error: error.message },
+      500
+    );
+  }
+});
+
+userRouter.post("/create", async (c) => {
   try {
     const { name, email, password } = await c.req.json();
     const user = await UserServices.createUser(name, email, password);
@@ -19,11 +34,7 @@ userRouter.post("/", async (c) => {
 userRouter.put("/password", async (c) => {
   try {
     const { name, email, updatePassword } = await c.req.json();
-    const user = await  UserServices.updatePassword(
-      name,
-      email,
-      updatePassword
-    );
+    const user = await UserServices.updatePassword(name, email, updatePassword);
     return c.json(user);
   } catch (error: any) {
     return c.json(
@@ -36,7 +47,7 @@ userRouter.put("/password", async (c) => {
 userRouter.delete("/", async (c) => {
   try {
     const { name, email } = await c.req.json();
-    const user = await  UserServices.deleteUser(name, email);
+    const user = await UserServices.deleteUser(name, email);
     return c.json(user);
   } catch (error: any) {
     return c.json(
@@ -49,7 +60,7 @@ userRouter.delete("/", async (c) => {
 userRouter.get("/", async (c) => {
   try {
     const { name, email } = await c.req.json();
-    const user = await  UserServices.getUser({ name, email });
+    const user = await UserServices.getUser({ name, email });
     return c.json(user);
   } catch (error: any) {
     return c.json(
