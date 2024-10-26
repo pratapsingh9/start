@@ -48,6 +48,9 @@ const Terminal: React.FC<TerminalProps> = ({ output }) => {
       },
       echo: (args: string[]) => addToHistory(args.join(' ')),
       date: () => addToHistory(new Date().toLocaleString()),
+      hi:() => {
+        addToHistory("HI MYSELF VIRTUAL TERMINAL CREATED BY PRATAP ANY HELP I CAN DO TO YOU")
+      }
     };
 
     const [cmd, ...args] = command.split(' ');
